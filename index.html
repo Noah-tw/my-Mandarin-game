@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F4F7F9">
+<title>ㄅㄆㄇ TW Mandarin Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════
+   Mobile & PC Premium UI 
+════════════════════════════════════════════ */
+:root {
+  --bg: #F4F7F9;
+  --surface: #FFFFFF;
+  --primary: #3A9BEA;
+  --secondary: #38C172;
+  --error: #FF6B8B;
+  --warning: #F6AD55;
+  --ink: #2D3748;
+  --muted: #A0AEC0;
+  --border: #E2E8F0;
+  --shadow-sm: 0 4px 12px rgba(45, 55, 72, 0.05);
+  --shadow-md: 0 8px 24px rgba(45, 55, 72, 0.08);
+  --shadow-lg: 0 16px 32px rgba(45, 55, 72, 0.12);
+  --radius: 24px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', 'Noto Sans TC', sans-serif; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+body { color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: calc(env(safe-area-inset-bottom) + 20px); overflow-x: hidden; user-select: none; }
+
+/* ── LANDING PAGE ── */
+#landing-page {
+  position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px; text-align: center; transition: opacity 0.4s ease, visibility 0.4s; overflow-y: auto;
+}
+.landing-card { background: var(--surface); padding: 40px 24px 24px; border-radius: 32px; box-shadow: var(--shadow-lg); max-width: 400px; width: 100%; margin: auto;}
+.l-icon { font-size: 5rem; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.l-title { font-size: 2.2rem; font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 8px; }
+.l-title span { color: var(--primary); }
+.l-desc { font-size: 1rem; color: var(--muted); font-weight: 700; margin-bottom: 32px; }
+.l-stats { background: #F8FAFC; border-radius: 20px; padding: 20px; margin-bottom: 32px; border: 2px solid var(--border); }
+.l-stat-val { font-size: 2.8rem; font-weight: 900; color: var(--primary); line-height: 1; margin-bottom: 4px;}
+.l-stat-lbl { font-size: 0.85rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.l-level { background: #E9D8FD; color: #553C9A; padding: 6px 16px; border-radius: 50px; font-weight: 900; font-size: 1rem; display: inline-block; }
+.btn-start { width: 100%; padding: 20px; border: none; border-radius: 20px; font-size: 1.3rem; font-weight: 900; color: white; background: var(--secondary); cursor: pointer; box-shadow: 0 6px 0 #2F855A; transition: transform 0.1s, box-shadow 0.1s; margin-bottom: 16px; }
+.btn-start:active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
+.btn-reset { background: transparent; border: none; color: var(--warning); font-weight: 800; font-size: 0.95rem; cursor: pointer; padding: 12px; width: 100%; }
+
+/* ── HEADER ── */
+#main-app { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; opacity: 0; animation: fadeInApp 0.5s ease forwards; }
+@keyframes fadeInApp { to { opacity: 1; } }
+header { width: 100%; padding: 16px 20px 12px; background: var(--bg); position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 1.4rem; font-weight: 900; color: var(--ink); text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;}
+.logo span { color: var(--primary); }
+.nav-tabs { display: flex; background: #E2E8F0; border-radius: 16px; padding: 6px; margin-top: 16px; }
+.nav-btn { flex: 1; padding: 12px 0; border: none; border-radius: 12px; background: transparent; color: var(--muted); font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+.nav-btn.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+/* ── APP CONTAINER ── */
+.panel { display: none; width: 100%; padding: 10px 16px 40px; animation: fadeIn 0.3s ease; }
+.panel.active { display: block; }
+
+/* SCROLLING CATEGORIES WITH PC DRAG SUPPORT */
+.cat-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 16px; margin-bottom: 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; cursor: grab; }
+.cat-scroll:active { cursor: grabbing; }
+.cat-scroll::-webkit-scrollbar { display: none; }
+.cat-pill { flex-shrink: 0; padding: 10px 20px; border-radius: 50px; border: 2px solid transparent; background: var(--surface); color: var(--muted); font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform 0.1s; user-select: none;}
+.cat-pill:active { transform: scale(0.95); }
+.cat-pill.active { background: var(--ink); color: white; }
+
+/* ── PROGRESSION HUD ── */
+.hud { background: var(--surface); border-radius: 20px; padding: 16px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); border-left: 6px solid #805AD5; }
+.hud-stat { display: flex; flex-direction: column; }
+.hud-lbl { font-size: 0.8rem; color: var(--muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.hud-val { font-size: 1.3rem; font-weight: 900; color: var(--ink); }
+.lvl-badge { background: #E9D8FD; color: #553C9A; padding: 6px 14px; border-radius: 50px; font-weight: 900; font-size: 0.95rem; }
+
+/* ── WORD CARD ── */
+.word-card { background: var(--surface); border-radius: var(--radius); padding: 28px 20px; text-align: center; margin-bottom: 20px; box-shadow: var(--shadow-md); position: relative; border-top: 6px solid var(--primary); }
+.word-prog { position: absolute; top: 16px; right: 16px; font-size: 0.9rem; font-weight: 800; color: var(--muted); background: #EDF2F7; padding: 6px 12px; border-radius: 50px;}
+.word-eng { font-size: 2.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px; color: var(--ink); margin-top: 10px;}
+.word-hint { font-size: 1rem; color: var(--muted); font-weight: 700; margin-bottom: 20px; }
+.listen-btn { display: inline-flex; align-items: center; gap: 8px; background: #EBF8FF; color: #2B6CB0; border: none; font-size: 1rem; font-weight: 800; padding: 8px 20px; border-radius: 50px; cursor: pointer; margin-bottom: 20px; transition: transform 0.1s;}
+.listen-btn:active { transform: scale(0.92); background: #bee3f8;}
+.sandhi-note { display: inline-block; background: #FEF3C7; color: #D97706; font-size: 0.9rem; font-weight: 800; padding: 6px 14px; border-radius: 10px; margin-bottom: 20px; }
+
+/* ── SLOTS ── */
+.slots { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.slot { flex: 1; min-width: 90px; max-width: 130px; background: var(--bg); border: 2px solid transparent; border-radius: 20px; padding: 20px 8px 16px; text-align: center; transition: 0.2s; position: relative; cursor: pointer; }
+.slot:active { transform: scale(0.96); }
+.slot.active { background: #EBF8FF; border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 6px 16px rgba(58, 155, 234, 0.2); }
+.slot.done { background: #F0FFF4; border-color: var(--secondary); }
+.slot.error { animation: shake 0.4s ease; background: #FFF5F7; border-color: var(--error); }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.s-hz { font-size: 2.6rem; font-weight: 900; color: var(--ink); line-height: 1; margin-bottom: 8px; }
+.s-py { font-size: 1.3rem; font-weight: 900; color: #718096; margin-bottom: 8px; }
+.slot.active .s-py { color: var(--primary); }
+.slot.done .s-py { color: var(--secondary); }
+.s-zh { font-size: 1.3rem; font-weight: 900; color: var(--ink); min-height: 1.5rem; letter-spacing: 2px; }
+.s-zh span { color: var(--muted); opacity: 0.3; } 
+
+/* ── TILE BANK ── */
+.bank-head { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 0 4px; align-items: center;}
+.bank-head span { font-size: 0.95rem; font-weight: 800; color: var(--muted); }
+.hint-btn { background: #FEF3C7; border: none; color: #D97706; font-weight: 800; font-size: 0.95rem; padding: 8px 16px; border-radius: 50px; cursor: pointer; transition: transform 0.1s;}
+.hint-btn:active { transform: scale(0.92); }
+.bank { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 12px; background: var(--surface); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-md); margin-bottom: 24px; }
+.tile { background: var(--bg); border-radius: 16px; padding: 16px 0 12px; text-align: center; cursor: pointer; border-bottom: 4px solid var(--border); transition: transform 0.1s, border-bottom-width 0.1s, margin-top 0.1s; border-top: 1px solid var(--surface); user-select: none;}
+.tile:active:not(.used) { transform: translateY(4px); border-bottom-width: 0; margin-top: 4px; }
+.t-zh { font-size: 1.8rem; font-weight: 900; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.t-py { font-size: 1.05rem; font-weight: 800; color: var(--muted); }
+.tile.used { opacity: 0.15; pointer-events: none; border-bottom-width: 0; transform: translateY(4px); }
+
+/* ── ACTIONS ── */
+.btn-next { width: 100%; padding: 22px; border: none; border-radius: 20px; font-size: 1.3rem; font-weight: 900; color: white; background: var(--secondary); cursor: pointer; box-shadow: 0 6px 0 #2F855A; transition: 0.1s; display: none; }
+.btn-next:active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
+.finish { text-align: center; padding: 40px 20px; display: none; }
+.finish h1 { font-size: 2.2rem; color: var(--ink); margin: 16px 0; font-weight: 900;}
+
+/* ── REVIEW LIST ── */
+.r-list { display: flex; flex-direction: column; gap: 16px; }
+.r-card { background: var(--surface); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px; border-left: 5px solid var(--border);}
+.r-card.mastered { border-left-color: var(--secondary); background: #F8FFF9;}
+.r-card.struggled { border-left-color: var(--error); }
+.r-top { display: flex; justify-content: space-between; align-items: flex-end; }
+.r-hz { font-size: 2.2rem; font-weight: 900; color: var(--ink); line-height: 1; display:flex; align-items:center; gap:12px;}
+.r-listen { background: #EBF8FF; color: #2B6CB0; border: none; font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+.r-listen:active { transform: scale(0.85); background: #bee3f8;}
+.r-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 8px; font-weight: 800; }
+.b-master { background: #D1FAE5; color: #065F46; }
+.b-prac { background: #FFE4E6; color: #9F1239; }
+.r-en { font-size: 1rem; font-weight: 800; color: var(--muted); text-transform: uppercase;}
+.r-syls { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; padding-top: 16px; border-top: 1px dashed var(--border); }
+.r-syl { display: flex; align-items: baseline; gap: 8px; }
+.r-s-hz { font-size: 1.4rem; font-weight: 900; color: var(--primary); }
+.r-s-py { font-size: 1.2rem; font-weight: 900; color: var(--muted); }
+.r-s-zh { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
+.r-note { font-size: 0.9rem; color: #D97706; background: #FEF3C7; padding: 6px 12px; border-radius: 8px; align-self: flex-start; font-weight: 800;}
+
+/* ── DISCLAIMER / NOTES ── */
+.disclaimer { font-size: 0.85rem; color: var(--muted); text-align: center; padding: 24px 16px 10px; font-weight: 700; line-height: 1.5; opacity: 0.8; }
+.disclaimer span { display: block; margin-bottom: 6px; font-size: 1.2rem; }
+
+/* ── MODALS & TOASTS ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px; }
+.overlay.active { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); width: 100%; max-width: 360px; padding: 32px 24px; border-radius: 32px; text-align: center; transform: translateY(20px); transition: transform 0.3s ease; box-shadow: var(--shadow-lg); }
+.overlay.active .modal { transform: translateY(0); }
+.modal h3 { font-size: 1.5rem; color: var(--ink); font-weight: 900; margin-bottom: 8px; }
+.modal p { color: var(--muted); font-size: 1rem; font-weight: 700; margin-bottom: 24px; line-height: 1.4; }
+.modal-actions { display: flex; gap: 12px; }
+.m-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: 0.1s; }
+.m-btn.cancel { background: var(--bg); color: var(--ink); }
+.m-btn.cancel:active { background: var(--border); }
+.m-btn.danger { background: var(--error); color: white; box-shadow: 0 4px 0 #D53F8C; }
+.m-btn.danger:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+
+#toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; padding: 14px 24px; border-radius: 50px; font-weight: 800; font-size: 1rem; opacity: 0; pointer-events: none; transition: 0.3s ease; z-index: 3000; box-shadow: var(--shadow-md); white-space: nowrap; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+</style>
+</head>
+<body>
+
+<!-- 🌸 LANDING PAGE -->
+<div id="landing-page">
+  <div class="landing-card">
+    <div class="l-icon">🌸</div>
+    <div class="l-title"><span>ㄅㄆㄇ</span> Master</div>
+    <div class="l-desc">Master authentic Taiwanese Mandarin</div>
+    
+    <div class="l-stats">
+      <div class="l-stat-lbl">Flawless Words</div>
+      <div class="l-stat-val" id="l-mastered">0</div>
+      <div style="margin-top:12px;">
+        <span class="l-level" id="l-level">Level 1: Novice</span>
+      </div>
+    </div>
+    
+    <button class="btn-start" onclick="startApp()">Start Learning →</button>
+    <button class="btn-reset" onclick="requestReset()">Clear All Progress</button>
+  </div>
+  
+  <div class="disclaimer">
+    <span>⚠️</span>
+    <strong>Developer Note (Beta):</strong><br>
+    Because this app runs offline to stay 100% free, the automatic voice relies on your device's built-in dictionary. It may occasionally mispronounce specific Taiwanese exceptions. Please use it primarily as a study reference!
+  </div>
+</div>
+
+<!-- 🌸 MAIN APP -->
+<div id="main-app">
+  <header>
+    <div class="logo">🌸 <span>ㄅㄆㄇ</span> TW Mandarin</div>
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="tab('game')">Play & Learn</button>
+      <button class="nav-btn" onclick="tab('review')">Review Words</button>
+    </div>
+  </header>
+
+  <div id="game-panel" class="panel active">
+    <div class="hud">
+      <div class="hud-stat">
+        <span class="hud-lbl">Mastered</span>
+        <span class="hud-val" id="hud-mastered">0</span>
+      </div>
+      <div class="lvl-badge" id="hud-level">Level 1: Novice</div>
+    </div>
+
+    <div class="cat-scroll" id="game-cats"></div>
+
+    <div id="play-area">
+      <div class="word-card">
+        <div class="word-prog" id="prog-val">1/10</div>
+        <div class="word-eng" id="c-eng"></div>
+        <div class="word-hint" id="c-hint"></div>
+        
+        <div><button class="listen-btn" onclick="playCurrentWordTTS()">🔊 Listen</button></div>
+        
+        <div id="c-note"></div>
+        <div class="slots" id="slots"></div>
+      </div>
+
+      <div class="bank-head">
+        <span>Tap to build sounds</span>
+        <button class="hint-btn" onclick="hint()">💡 Hint</button>
+      </div>
+      <div class="bank" id="bank"></div>
+      <button class="btn-next" id="btn-next" onclick="nextWord()">Great! Next Word →</button>
+    </div>
+
+    <div class="finish" id="finish">
+      <div style="font-size: 4rem; margin-bottom: 12px;">🏆</div>
+      <h1>Category Completed!</h1>
+      <button class="btn-next" style="display:block; margin-bottom:16px; background:var(--primary); box-shadow:0 6px 0 #2B6CB0;" onclick="nextCat()">Try Next Category →</button>
+      <button class="btn-next" style="display:block; background:var(--surface); color:var(--ink); border:2px solid var(--border); box-shadow:none;" onclick="replay()">↻ Shuffle & Play Again</button>
+    </div>
+    
+    <div class="disclaimer" style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 20px;">
+        ⚠️ Due to offline limits, your device's voice may slightly mispronounce local Taiwanese slang. Mostly use as reference!
+    </div>
+  </div>
+
+  <div id="review-panel" class="panel">
+    <div class="cat-scroll" id="rev-cats"></div>
+    <div class="r-list" id="rev-list"></div>
+    <div class="disclaimer" style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 20px;">
+        ⚠️ Due to offline limits, your device's voice may slightly mispronounce local Taiwanese slang. Mostly use as reference!
+    </div>
+  </div>
+</div>
+
+<!-- IN-APP UI COMPONENTS -->
+<div id="toast">Message</div>
+
+<div id="confirm-modal" class="overlay">
+  <div class="modal">
+    <h3>Are you sure?</h3>
+    <p>This will permanently erase all your learned words and reset your level.</p>
+    <div class="modal-actions">
+      <button class="m-btn cancel" onclick="closeReset()">Cancel</button>
+      <button class="m-btn danger" onclick="executeReset()">Reset App</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  UI HELPERS
+// ════════════════════════════════════════════════════════
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function requestReset() {
+  AudioSys.playSFX('btn_click');
+  document.getElementById('confirm-modal').classList.add('active');
+}
+
+function closeReset() {
+  AudioSys.playSFX('btn_click');
+  document.getElementById('confirm-modal').classList.remove('active');
+}
+
+function executeReset() {
+  masteredWords.clear();
+  saveStorage();
+  closeReset();
+  showToast("✅ Progress successfully cleared!");
+}
+
+// DRAG TO SCROLL FOR PC MOUSE USERS
+function enableDragScroll(slider) {
+  let isDown = false, startX, scrollLeft;
+  
+  slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.style.cursor = 'grabbing';
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  });
+  slider.addEventListener('mouseleave', () => { isDown = false; slider.style.cursor = 'grab'; });
+  slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
+  slider.addEventListener('mousemove', (e) => {
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    slider.scrollLeft = scrollLeft - ((x - startX) * 2);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  TEXT-TO-SPEECH ENGINE WITH "TAIWANESE PRONUNCIATION HACK"
+// ════════════════════════════════════════════════════════
+const TTS = {
+    voice: null,
+    init: function() {
+        const setVoice = () => {
+            let voices = window.speechSynthesis.getVoices();
+            this.voice = voices.find(v => v.lang === 'zh-TW' && (v.name.includes('Yating') || v.name.includes('Hanlin') || v.name.includes('Mei-Jia'))) 
+                      || voices.find(v => v.lang === 'zh-TW') 
+                      || voices.find(v => v.lang.startsWith('zh'));
+        };
+        window.speechSynthesis.onvoiceschanged = setVoice;
+        setVoice();
+    },
+    
+    // This function tricks the native OS voice into saying the correct Taiwanese tone
+    // by swapping words with their homophones (words that sound exactly the same).
+    fixTaiwanTones: function(text) {
+        let t = text;
+        t = t.replace(/和/g, '汗');    // Force 4th tone (hàn)
+        t = t.replace(/法國/g, '髮國'); // Force 4th tone (fà guó)
+        t = t.replace(/星期/g, '星其'); // Force 2nd tone (xīng qí)
+        t = t.replace(/微波/g, '圍波'); // Force 2nd tone (wéi bō)
+        t = t.replace(/載具/g, '宰具'); // Force 3rd tone (zǎi jù)
+        t = t.replace(/便宜/g, '便儀'); // Force 2nd tone (pián yí)
+        t = t.replace(/垃圾/g, '勒瑟'); // Force (lè sè)
+        return t;
+    },
+
+    speak: function(text, rate = 0.85) {
+        if (!window.speechSynthesis) {
+            showToast("Speech feature not supported on this device.");
+            return;
+        }
+        window.speechSynthesis.cancel();
+        
+        const correctedText = this.fixTaiwanTones(text);
+        const u = new SpeechSynthesisUtterance(correctedText);
+        
+        u.lang = 'zh-TW';
+        u.rate = rate; 
+        if (this.voice) u.voice = this.voice;
+        window.speechSynthesis.speak(u);
+    }
+};
+TTS.init();
+
+function playCurrentWordTTS() {
+    AudioSys.playSFX('btn_click');
+    const hanzi = currentQueue[wIdx].hanzi;
+    TTS.speak(hanzi);
+}
+
+// ════════════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ════════════════════════════════════════════════════════
+const AudioSys = {
+    ctx: null, cache: {}, htmlFallback: {}, 
+    srcs: { pop: "audio/Pop_Sound_Effect.mp3", error: "audio/error.mp3", reminder: "audio/reminder.mp3", menu_tab: "audio/menu_change.mp3", btn_click: "audio/button.mp3" },
+    init: async function() {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (window.AudioContext) this.ctx = new AudioContext();
+        for (let key in this.srcs) {
+            const audioEl = new Audio(this.srcs[key]);
+            audioEl.volume = 0.8; 
+            this.htmlFallback[key] = audioEl;
+            if (this.ctx) {
+                try {
+                    const response = await fetch(this.srcs[key]);
+                    if (!response.ok) continue; 
+                    const arrayBuffer = await response.arrayBuffer();
+                    this.ctx.decodeAudioData(arrayBuffer, (decodedData) => { this.cache[key] = decodedData; }, () => {});
+                } catch (e) { }
+            }
+        }
+    },
+    playSFX: function(key) {
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); 
+        if (this.cache[key] && this.ctx) {
+            const source = this.ctx.createBufferSource();
+            source.buffer = this.cache[key];
+            source.connect(this.ctx.destination);
+            source.start(0);
+        } else if (this.htmlFallback[key]) {
+            this.htmlFallback[key].currentTime = 0; 
+            this.htmlFallback[key].play().catch(()=>{});
+        }
+    }
+};
+AudioSys.init();
+
+// ════════════════════════════════════════════════════════
+//  DATA FACTORY & HIGH-ACCURACY TAIWAN DATABASE
+// ════════════════════════════════════════════════════════
+const T = (z, p) => ({ zh: z, py: p });
+const S = (c, p, z, ...t) => ({ char: c, py: p, zh: z, tiles: t });
+const W = (e, h, hz, n, ...s) => ({ eng: e, hint: h, hanzi: hz, sandhi: n, syllables: s });
+
+const DB = [
+{label: 'Essentials 🙋', words: [
+  W('Hello', 'Basic greeting', '你好', '3rd+3rd → ní hǎo', S('你','nǐ','ㄋㄧˇ',T('ㄋ','n'),T('ㄧˇ','ǐ')), S('好','hǎo','ㄏㄠˇ',T('ㄏ','h'),T('ㄠˇ','ǎo'))),
+  W('Thank you', 'Always polite', '謝謝', 'Neutral tone ˙ on 2nd', S('謝','xiè','ㄒㄧㄝˋ',T('ㄒ','x'),T('ㄧㄝˋ','iè')), S('謝','xie','ㄒㄧㄝ˙',T('ㄒ','x'),T('ㄧㄝ˙','ie·'))),
+  W('You\'re welcome', 'Reply to thanks', '不客氣', '不(bù) → bú (2nd) before 4th', S('不','bú','ㄅㄨˊ',T('ㄅ','b'),T('ㄨˊ','ú')), S('客','kè','ㄎㄜˋ',T('ㄎ','k'),T('ㄜˋ','è')), S('氣','qì','ㄑㄧˋ',T('ㄑ','q'),T('ㄧˋ','ì'))),
+  W('Excuse me / May I ask', 'To get attention', '請問', '', S('請','qǐng','ㄑㄧㄥˇ',T('ㄑ','q'),T('ㄧㄥˇ','ǐng')), S('問','wèn','ㄨㄣˋ',T('ㄨㄣˋ','wèn'))),
+  W('Excuse me / Embarrassed', 'Very versatile TW phrase', '不好意思', '不→bù (keeps 4th)', S('不','bù','ㄅㄨˋ',T('ㄅ','b'),T('ㄨˋ','ù')), S('好','hǎo','ㄏㄠˇ',T('ㄏ','h'),T('ㄠˇ','ǎo')), S('意','yì','ㄧˋ',T('ㄧˋ','yì')), S('思','si','ㄙ˙',T('ㄙ','s'),T('˙','·'))),
+  W('I don\'t understand', 'Crucial survival phrase', '聽不懂', '不 is 4th tone in TW', S('聽','tīng','ㄊㄧㄥ',T('ㄊ','t'),T('ㄧㄥ','īng')), S('不','bù','ㄅㄨˋ',T('ㄅ','b'),T('ㄨˋ','ù')), S('懂','dǒng','ㄉㄨㄥˇ',T('ㄉ','d'),T('ㄨㄥˇ','ǒng'))),
+  W('I don\'t know', '', '不知道', '', S('不','bù','ㄅㄨˋ',T('ㄅ','b'),T('ㄨˋ','ù')), S('知','zhī','ㄓ',T('ㄓ','zh')), S('道','dào','ㄉㄠˋ',T('ㄉ','d'),T('ㄠˋ','ào'))),
+  W('Goodbye', '', '再見', '', S('再','zài','ㄗㄞˋ',T('ㄗ','z'),T('ㄞˋ','ài')), S('見','jiàn','ㄐㄧㄢˋ',T('ㄐ','j'),T('ㄧㄢˋ','iàn'))),
+  W('Bye bye', 'Most common TW goodbye', '拜拜', '', S('拜','bāi','ㄅㄞ',T('ㄅ','b'),T('ㄞ','āi')), S('拜','bāi','ㄅㄞ',T('ㄅ','b'),T('ㄞ','āi'))),
+  W('I / Me', '', '我', '', S('我','wǒ','ㄨㄛˇ',T('ㄨ','w'),T('ㄛˇ','ǒ'))),
+  W('You', '', '你', '', S('你','nǐ','ㄋㄧˇ',T('ㄋ','n'),T('ㄧˇ','ǐ'))),
+  W('He / She', '', '他', '', S('他','tā','ㄊㄚ',T('ㄊ','t'),T('ㄚ','ā'))),
+  W('Good morning', '', '早安', '', S('早','zǎo','ㄗㄠˇ',T('ㄗ','z'),T('ㄠˇ','ǎo')), S('安','ān','ㄢ',T('ㄢ','ān'))),
+  W('You got this / Go for it!', 'Cheer someone on', '加油', '', S('加','jiā','ㄐㄧㄚ',T('ㄐ','j'),T('ㄧㄚ','iā')), S('油','yóu','ㄧㄡˊ',T('ㄧㄡˊ','yóu'))),
+  W('Thanks for your hard work', 'Said after effort', '辛苦了', '', S('辛','xīn','ㄒㄧㄣ',T('ㄒ','x'),T('ㄧㄣ','īn')), S('苦','kǔ','ㄎㄨˇ',T('ㄎ','k'),T('ㄨˇ','ǔ')), S('了','le','ㄌㄜ˙',T('ㄌ','l'),T('ㄜ˙','e·'))),
+  W('No problem', '', '沒問題', '', S('沒','méi','ㄇㄟˊ',T('ㄇ','m'),T('ㄟˊ','éi')), S('問','wèn','ㄨㄣˋ',T('ㄨㄣˋ','wèn')), S('題','tí','ㄊㄧˊ',T('ㄊ','t'),T('ㄧˊ','í'))),
+  W('Anything is fine', '', '都可以', '3rd+3rd → ké yǐ', S('都','dōu','ㄉㄡ',T('ㄉ','d'),T('ㄡ','ōu')), S('可','kě','ㄎㄜˇ',T('ㄎ','k'),T('ㄜˇ','ě')), S('以','yǐ','ㄧˇ',T('ㄧˇ','yǐ'))),
+  W('Please (Begging)', '', '拜託', '', S('拜','bài','ㄅㄞˋ',T('ㄅ','b'),T('ㄞˋ','ài')), S('託','tuō','ㄊㄨㄛ',T('ㄊ','t'),T('ㄨㄛ','uō'))),
+  W('Wait a moment', '', '等一下', '一(yī)→yí before 4th tone', S('等','děng','ㄉㄥˇ',T('ㄉ','d'),T('ㄥˇ','ěng')), S('一','yí','ㄧˊ',T('ㄧˊ','yí')), S('下','xià','ㄒㄧㄚˋ',T('ㄒ','x'),T('ㄧㄚˋ','ià')))
+]},
+
+{label: 'Daily Life & Home 🏠', words: [
+  W('Convenience store', '7-11, FamilyMart', '超商', '', S('超','chāo','ㄔㄠ',T('ㄔ','ch'),T('ㄠ','āo')), S('商','shāng','ㄕㄤ',T('ㄕ','sh'),T('ㄤ','āng'))),
+  W('Microwave', 'Very common in TW 7-11', '微波', '微 = 2nd tone in TW', S('微','wéi','ㄨㄟˊ',T('ㄨㄟˊ','wéi')), S('波','bō','ㄅㄛ',T('ㄅ','b'),T('ㄛ','ō'))),
+  W('Garbage Truck', 'Iconic TW culture', '垃圾車', '垃圾 = lè sè (TW specific)', S('垃','lè','ㄌㄜˋ',T('ㄌ','l'),T('ㄜˋ','è')), S('圾','sè','ㄙㄜˋ',T('ㄙ','s'),T('ㄜˋ','è')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē'))),
+  W('Trash Can', '', '垃圾桶', '垃圾 = lè sè', S('垃','lè','ㄌㄜˋ',T('ㄌ','l'),T('ㄜˋ','è')), S('圾','sè','ㄙㄜˋ',T('ㄙ','s'),T('ㄜˋ','è')), S('桶','tǒng','ㄊㄨㄥˇ',T('ㄊ','t'),T('ㄨㄥˇ','ǒng'))),
+  W('Mobile Phone', '', '手機', '', S('手','shǒu','ㄕㄡˇ',T('ㄕ','sh'),T('ㄡˇ','ǒu')), S('機','jī','ㄐㄧ',T('ㄐ','j'),T('ㄧ','ī'))),
+  W('Internet', 'TW usage', '網路', '', S('網','wǎng','ㄨㄤˇ',T('ㄨㄤˇ','wǎng')), S('路','lù','ㄌㄨˋ',T('ㄌ','l'),T('ㄨˋ','ù'))),
+  W('Password', '', '密碼', '', S('密','mì','ㄇㄧˋ',T('ㄇ','m'),T('ㄧˋ','ì')), S('碼','mǎ','ㄇㄚˇ',T('ㄇ','m'),T('ㄚˇ','ǎ'))),
+  W('Charging Cable', '', '充電線', '', S('充','chōng','ㄔㄨㄥ',T('ㄔ','ch'),T('ㄨㄥ','ōng')), S('電','diàn','ㄉㄧㄢˋ',T('ㄉ','d'),T('ㄧㄢˋ','iàn')), S('線','xiàn','ㄒㄧㄢˋ',T('ㄒ','x'),T('ㄧㄢˋ','iàn'))),
+  W('Video', 'TW usage (Not 視頻)', '影片', '', S('影','yǐng','ㄧㄥˇ',T('ㄧㄥˇ','yǐng')), S('片','piàn','ㄆㄧㄢˋ',T('ㄆ','p'),T('ㄧㄢˋ','iàn'))),
+  W('App / Software', 'TW usage', '軟體', '', S('軟','ruǎn','ㄖㄨㄢˇ',T('ㄖ','r'),T('ㄨㄢˇ','uǎn')), S('體','tǐ','ㄊㄧˇ',T('ㄊ','t'),T('ㄧˇ','ǐ'))),
+  W('Tissue paper', '', '衛生紙', '', S('衛','wèi','ㄨㄟˋ',T('ㄨㄟˋ','wèi')), S('生','shēng','ㄕㄥ',T('ㄕ','sh'),T('ㄥ','ēng')), S('紙','zhǐ','ㄓˇ',T('ㄓ','zh'),T('ˇ','ˇ'))),
+  W('Keys', '', '鑰匙', '', S('鑰','yào','ㄧㄠˋ',T('ㄧㄠˋ','yào')), S('匙','shi','ㄕ˙',T('ㄕ','sh'),T('˙','·'))),
+  W('Air Conditioner', 'Essential in TW', '冷氣', '', S('冷','lěng','ㄌㄥˇ',T('ㄌ','l'),T('ㄥˇ','ěng')), S('氣','qì','ㄑㄧˋ',T('ㄑ','q'),T('ㄧˋ','ì')))
+]},
+
+{label: 'Shopping & Money 💳', words: [
+  W('How much money?', '', '多少錢', '', S('多','duō','ㄉㄨㄛ',T('ㄉ','d'),T('ㄨㄛ','uō')), S('少','shǎo','ㄕㄠˇ',T('ㄕ','sh'),T('ㄠˇ','ǎo')), S('錢','qián','ㄑㄧㄢˊ',T('ㄑ','q'),T('ㄧㄢˊ','ián'))),
+  W('Check out / Pay', 'Crucial phrase', '結帳', '', S('結','jié','ㄐㄧㄝˊ',T('ㄐ','j'),T('ㄧㄝˊ','ié')), S('帳','zhàng','ㄓㄤˋ',T('ㄓ','zh'),T('ㄤˋ','àng'))),
+  W('Top up (Money)', 'For EasyCard/Phones', '儲值', '', S('儲','chú','ㄔㄨˊ',T('ㄔ','ch'),T('ㄨˊ','ú')), S('值','zhí','ㄓˊ',T('ㄓ','zh'),T('ˊ','í'))),
+  W('Cloud Receipt', 'Barcode for invoices', '載具', '載 is 3rd tone in TW tech terms', S('載','zǎi','ㄗㄞˇ',T('ㄗ','z'),T('ㄞˇ','ǎi')), S('具','jù','ㄐㄩˋ',T('ㄐ','j'),T('ㄩˋ','ù'))),
+  W('Receipt', 'TW receipts are lottery tickets!', '發票', '', S('發','fā','ㄈㄚ',T('ㄈ','f'),T('ㄚ','ā')), S('票','piào','ㄆㄧㄠˋ',T('ㄆ','p'),T('ㄧㄠˋ','iào'))),
+  W('Tax ID Number', 'Store clerks will ask this', '統編', '', S('統','tǒng','ㄊㄨㄥˇ',T('ㄊ','t'),T('ㄨㄥˇ','ǒng')), S('編','biān','ㄅㄧㄢ',T('ㄅ','b'),T('ㄧㄢ','iān'))),
+  W('No bag needed', 'Plastic bag policy', '不用袋子', '', S('不','bú','ㄅㄨˊ',T('ㄅ','b'),T('ㄨˊ','ú')), S('用','yòng','ㄩㄥˋ',T('ㄩㄥˋ','yòng')), S('袋','dài','ㄉㄞˋ',T('ㄉ','d'),T('ㄞˋ','ài')), S('子','zi','ㄗ˙',T('ㄗ','z'),T('˙','·'))),
+  W('Give phone number', 'For store points', '報電話', '', S('報','bào','ㄅㄠˋ',T('ㄅ','b'),T('ㄠˋ','ào')), S('電','diàn','ㄉㄧㄢˋ',T('ㄉ','d'),T('ㄧㄢˋ','iàn')), S('話','huà','ㄏㄨㄚˋ',T('ㄏ','h'),T('ㄨㄚˋ','uà'))),
+  W('Credit Card', '', '信用卡', '', S('信','xìn','ㄒㄧㄣˋ',T('ㄒ','x'),T('ㄧㄣˋ','ìn')), S('用','yòng','ㄩㄥˋ',T('ㄩㄥˋ','yòng')), S('卡','kǎ','ㄎㄚˇ',T('ㄎ','k'),T('ㄚˇ','ǎ'))),
+  W('Cash', '', '現金', '', S('現','xiàn','ㄒㄧㄢˋ',T('ㄒ','x'),T('ㄧㄢˋ','iàn')), S('金','jīn','ㄐㄧㄣ',T('ㄐ','j'),T('ㄧㄣ','īn'))),
+  W('EasyCard', 'TW Metro Card', '悠遊卡', '', S('悠','yōu','ㄧㄡ',T('ㄧㄡ','yōu')), S('遊','yóu','ㄧㄡˊ',T('ㄧㄡˊ','yóu')), S('卡','kǎ','ㄎㄚˇ',T('ㄎ','k'),T('ㄚˇ','ǎ'))),
+  W('Give change', '', '找錢', '', S('找','zhǎo','ㄓㄠˇ',T('ㄓ','zh'),T('ㄠˇ','ǎo')), S('錢','qián','ㄑㄧㄢˊ',T('ㄑ','q'),T('ㄧㄢˊ','ián'))),
+  W('Cheap', '', '便宜', '宜 is 2nd tone in TW', S('便','pián','ㄆㄧㄢˊ',T('ㄆ','p'),T('ㄧㄢˊ','ián')), S('宜','yí','ㄧˊ',T('ㄧˊ','yí'))),
+  W('Buy 1 Get 1 Free', '', '買一送一', '一(yī)→yí before 4th tone', S('買','mǎi','ㄇㄞˇ',T('ㄇ','m'),T('ㄞˇ','ǎi')), S('一','yí','ㄧˊ',T('ㄧˊ','yí')), S('送','sòng','ㄙㄨㄥˋ',T('ㄙ','s'),T('ㄨㄥˋ','òng')), S('一','yī','ㄧ',T('ㄧ','yī')))
+]},
+
+{label: 'Food & Boba 🧋', words: [
+  W('Hand-shaken beverage', 'Boba shop drink', '手搖飲', '', S('手','shǒu','ㄕㄡˇ',T('ㄕ','sh'),T('ㄡˇ','ǒu')), S('搖','yáo','ㄧㄠˊ',T('ㄧㄠˊ','yáo')), S('飲','yǐn','ㄧㄣˇ',T('ㄧㄣˇ','yǐn'))),
+  W('Boba tea', '', '珍珠奶茶', '', S('珍','zhēn','ㄓㄣ',T('ㄓ','zh'),T('ㄣ','ēn')), S('珠','zhū','ㄓㄨ',T('ㄓ','zh'),T('ㄨ','ū')), S('奶','nǎi','ㄋㄞˇ',T('ㄋ','n'),T('ㄞˇ','ǎi')), S('茶','chá','ㄔㄚˊ',T('ㄔ','ch'),T('ㄚˊ','á'))),
+  W('Half sugar', 'Standard TW order', '半糖', '', S('半','bàn','ㄅㄢˋ',T('ㄅ','b'),T('ㄢˋ','àn')), S('糖','táng','ㄊㄤˊ',T('ㄊ','t'),T('ㄤˊ','áng'))),
+  W('Less ice', '', '少冰', '', S('少','shǎo','ㄕㄠˇ',T('ㄕ','sh'),T('ㄠˇ','ǎo')), S('冰','bīng','ㄅㄧㄥ',T('ㄅ','b'),T('ㄧㄥ','īng'))),
+  W('No ice', '', '去冰', '', S('去','qù','ㄑㄩˋ',T('ㄑ','q'),T('ㄩˋ','ù')), S('冰','bīng','ㄅㄧㄥ',T('ㄅ','b'),T('ㄧㄥ','īng'))),
+  W('Bento / Lunchbox', '', '便當', '', S('便','biàn','ㄅㄧㄢˋ',T('ㄅ','b'),T('ㄧㄢˋ','iàn')), S('當','dāng','ㄉㄤ',T('ㄉ','d'),T('ㄤ','āng'))),
+  W('Braised pork rice', 'Classic TW dish', '滷肉飯', '', S('滷','lǔ','ㄌㄨˇ',T('ㄌ','l'),T('ㄨˇ','ǔ')), S('肉','ròu','ㄖㄡˋ',T('ㄖ','r'),T('ㄡˋ','òu')), S('飯','fàn','ㄈㄢˋ',T('ㄈ','f'),T('ㄢˋ','àn'))),
+  W('Popcorn Chicken', 'Night market classic', '鹽酥雞', '', S('鹽','yán','ㄧㄢˊ',T('ㄧㄢˊ','yán')), S('酥','sū','ㄙㄨ',T('ㄙ','s'),T('ㄨ','ū')), S('雞','jī','ㄐㄧ',T('ㄐ','j'),T('ㄧ','ī'))),
+  W('Stinky Tofu', '', '臭豆腐', '', S('臭','chòu','ㄔㄡˋ',T('ㄔ','ch'),T('ㄡˋ','òu')), S('豆','dòu','ㄉㄡˋ',T('ㄉ','d'),T('ㄡˋ','òu')), S('腐','fǔ','ㄈㄨˇ',T('ㄈ','f'),T('ㄨˇ','ǔ'))),
+  W('Beef Noodle Soup', '', '牛肉麵', '', S('牛','niú','ㄋㄧㄡˊ',T('ㄋ','n'),T('ㄧㄡˊ','iú')), S('肉','ròu','ㄖㄡˋ',T('ㄖ','r'),T('ㄡˋ','òu')), S('麵','miàn','ㄇㄧㄢˋ',T('ㄇ','m'),T('ㄧㄢˋ','iàn'))),
+  W('Egg pancake', 'Classic breakfast', '蛋餅', '', S('蛋','dàn','ㄉㄢˋ',T('ㄉ','d'),T('ㄢˋ','àn')), S('餅','bǐng','ㄅㄧㄥˇ',T('ㄅ','b'),T('ㄧㄥˇ','ǐng'))),
+  W('Soy milk', '', '豆漿', '', S('豆','dòu','ㄉㄡˋ',T('ㄉ','d'),T('ㄡˋ','òu')), S('漿','jiāng','ㄐㄧㄤ',T('ㄐ','j'),T('ㄧㄤ','iāng'))),
+  W('Add spicy', '', '加辣', '', S('加','jiā','ㄐㄧㄚ',T('ㄐ','j'),T('ㄧㄚ','iā')), S('辣','là','ㄌㄚˋ',T('ㄌ','l'),T('ㄚˋ','à'))),
+  W('Too hot (Temp)', '', '太燙', '', S('太','tài','ㄊㄞˋ',T('ㄊ','t'),T('ㄞˋ','ài')), S('燙','tàng','ㄊㄤˋ',T('ㄊ','t'),T('ㄤˋ','àng'))),
+  W('Delicious', '', '好吃', '', S('好','hǎo','ㄏㄠˇ',T('ㄏ','h'),T('ㄠˇ','ǎo')), S('吃','chī','ㄔ',T('ㄔ','ch'))),
+  W('Takeout', '', '外帶', '', S('外','wài','ㄨㄞˋ',T('ㄨ','w'),T('ㄞˋ','ài')), S('帶','dài','ㄉㄞˋ',T('ㄉ','d'),T('ㄞˋ','ài'))),
+  W('Dine-in', '', '內用', '', S('內','nèi','ㄋㄟˋ',T('ㄋ','n'),T('ㄟˋ','èi')), S('用','yòng','ㄩㄥˋ',T('ㄩㄥˋ','yòng'))),
+  W('Restaurant', 'Proper TW pronunciation', '餐廳', '', S('餐','cān','ㄘㄢ',T('ㄘ','c'),T('ㄢ','ān')), S('廳','tīng','ㄊㄧㄥ',T('ㄊ','t'),T('ㄧㄥ','īng')))
+]},
+
+{label: 'Places & Transport 🚆', words: [
+  W('Train Station', '', '火車站', '', S('火','huǒ','ㄏㄨㄛˇ',T('ㄏ','h'),T('ㄨㄛˇ','uǒ')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē')), S('站','zhàn','ㄓㄢˋ',T('ㄓ','zh'),T('ㄢˋ','àn'))),
+  W('High Speed Rail', 'THSR', '高鐵', '', S('高','gāo','ㄍㄠ',T('ㄍ','g'),T('ㄠ','āo')), S('鐵','tiě','ㄊㄧㄝˇ',T('ㄊ','t'),T('ㄧㄝˇ','iě'))),
+  W('Metro / MRT', 'TW usage (Not 地鐵)', '捷運', '', S('捷','jié','ㄐㄧㄝˊ',T('ㄐ','j'),T('ㄧㄝˊ','ié')), S('運','yùn','ㄩㄣˋ',T('ㄩㄣˋ','yùn'))),
+  W('Bus', 'TW usage', '公車', '', S('公','gōng','ㄍㄨㄥ',T('ㄍ','g'),T('ㄨㄥ','ōng')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē'))),
+  W('Scooter', 'TW usage', '機車', '', S('機','jī','ㄐㄧ',T('ㄐ','j'),T('ㄧ','ī')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē'))),
+  W('Bicycle', 'TW usage', '腳踏車', '', S('腳','jiǎo','ㄐㄧㄠˇ',T('ㄐ','j'),T('ㄧㄠˇ','iǎo')), S('踏','tà','ㄊㄚˋ',T('ㄊ','t'),T('ㄚˋ','à')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē'))),
+  W('Airport', '', '機場', '', S('機','jī','ㄐㄧ',T('ㄐ','j'),T('ㄧ','ī')), S('場','chǎng','ㄔㄤˇ',T('ㄔ','ch'),T('ㄤˇ','ǎng'))),
+  W('Restroom', '', '廁所', '', S('廁','cè','ㄘㄜˋ',T('ㄘ','c'),T('ㄜˋ','è')), S('所','suǒ','ㄙㄨㄛˇ',T('ㄙ','s'),T('ㄨㄛˇ','uǒ'))),
+  W('Hospital', '', '醫院', '', S('醫','yī','ㄧ',T('ㄧ','yī')), S('院','yuàn','ㄩㄢˋ',T('ㄩㄢˋ','yuàn'))),
+  W('Pharmacy', '', '藥局', '', S('藥','yào','ㄧㄠˋ',T('ㄧㄠˋ','yào')), S('局','jú','ㄐㄩˊ',T('ㄐ','j'),T('ㄩˊ','ú'))),
+  W('Night Market', '', '夜市', '', S('夜','yè','ㄧㄝˋ',T('ㄧㄝˋ','yè')), S('市','shì','ㄕˋ',T('ㄕ','sh'),T('ˋ','ˋ')))
+]},
+
+{label: 'Tone Rules ⚡', words: [
+  W('One (Item)', 'Measure word', '一個', '一(yī)→yí, 個 is neutral in TW speech', S('一','yí','ㄧˊ',T('ㄧˊ','yí')), S('個','ge','ㄍㄜ˙',T('ㄍ','g'),T('ㄜ˙','e·'))),
+  W('Number One', 'Ordinal keeps 1st tone', '第一', 'Ordinal = no change', S('第','dì','ㄉㄧˋ',T('ㄉ','d'),T('ㄧˋ','ì')), S('一','yī','ㄧ',T('ㄧ','yī'))),
+  W('France', 'TW specific rule (4th Tone)', '法國', '法 = 4th tone in TW', S('法','fà','ㄈㄚˋ',T('ㄈ','f'),T('ㄚˋ','à')), S('國','guó','ㄍㄨㄛˊ',T('ㄍ','g'),T('ㄨㄛˊ','uó'))),
+  W('Week', '', '星期', '期 is 2nd tone in TW', S('星','xīng','ㄒㄧㄥ',T('ㄒ','x'),T('ㄧㄥ','īng')), S('期','qí','ㄑㄧˊ',T('ㄑ','q'),T('ㄧˊ','í'))),
+  W('Dad', 'Family', '爸爸', '2nd char drops tone', S('爸','bà','ㄅㄚˋ',T('ㄅ','b'),T('ㄚˋ','à')), S('爸','ba','ㄅㄚ˙',T('ㄅ','b'),T('ㄚ˙','a·'))),
+  W('Mom', 'Family', '媽媽', '2nd char drops tone', S('媽','mā','ㄇㄚ',T('ㄇ','m'),T('ㄚ','ā')), S('媽','ma','ㄇㄚ˙',T('ㄇ','m'),T('ㄚ˙','a·'))),
+  W('Older brother', '', '哥哥', '2nd char drops tone', S('哥','gē','ㄍㄜ',T('ㄍ','g'),T('ㄜ','ē')), S('哥','ge','ㄍㄜ˙',T('ㄍ','g'),T('ㄜ˙','e·'))),
+  W('Incorrect', '', '不對', '不(bù)→bú before 4th tone', S('不','bú','ㄅㄨˊ',T('ㄅ','b'),T('ㄨˊ','ú')), S('對','duì','ㄉㄨㄟˋ',T('ㄉ','d'),T('ㄨㄟˋ','uì'))),
+  W('Very good', '', '很好', '3rd+3rd → hén hǎo', S('很','hěn','ㄏㄣˇ',T('ㄏ','h'),T('ㄣˇ','ěn')), S('好','hǎo','ㄏㄠˇ',T('ㄏ','h'),T('ㄠˇ','ǎo'))),
+  W('With me / And me', '和 is pronounced hàn in TW', '和我', '和 = hàn', S('和','hàn','ㄏㄢˋ',T('ㄏ','h'),T('ㄢˋ','àn')), S('我','wǒ','ㄨㄛˇ',T('ㄨ','w'),T('ㄛˇ','ǒ')))
+]},
+
+{label: 'TW Slang 😎', words: [
+  W('Feels great / Awesome', 'TW Slang', '爽', '', S('爽','shuǎng','ㄕㄨㄤˇ',T('ㄕ','sh'),T('ㄨㄤˇ','uǎng'))),
+  W('Speechless / Stunned', 'TW Slang', '傻眼', '', S('傻','shǎ','ㄕㄚˇ',T('ㄕ','sh'),T('ㄚˇ','ǎ')), S('眼','yǎn','ㄧㄢˇ',T('ㄧㄢˇ','yǎn'))),
+  W('Fussy / Annoying', 'TW Slang (Like a scooter)', '機車', '', S('機','jī','ㄐㄧ',T('ㄐ','j'),T('ㄧ','ī')), S('車','chē','ㄔㄜ',T('ㄔ','ch'),T('ㄜ','ē'))),
+  W('Exaggerated / Ridiculous', 'TW Slang', '誇張', '', S('誇','kuā','ㄎㄨㄚ',T('ㄎ','k'),T('ㄨㄚ','uā')), S('張','zhāng','ㄓㄤ',T('ㄓ','zh'),T('ㄤ','āng'))),
+  W('Awesome / Great', 'TW Slang', '讚', '', S('讚','zàn','ㄗㄢˋ',T('ㄗ','z'),T('ㄢˋ','àn'))),
+  W('Terrible / Trash', 'TW Slang', '爛', '', S('爛','làn','ㄌㄢˋ',T('ㄌ','l'),T('ㄢˋ','àn'))),
+  W('Anything is fine / Whatever', 'Casual choice', '隨便', '', S('隨','suí','ㄙㄨㄟˊ',T('ㄙ','s'),T('ㄨㄟˊ','uí')), S('便','biàn','ㄅㄧㄢˋ',T('ㄅ','b'),T('ㄧㄢˋ','iàn'))),
+  W('Picky / Difficult', 'TW Slang', '龜毛', '', S('龜','guī','ㄍㄨㄟ',T('ㄍ','g'),T('ㄨㄟ','uēi')), S('毛','máo','ㄇㄠˊ',T('ㄇ','m'),T('ㄠˊ','áo'))),
+  W('Doesn\'t matter', 'TW Phrase', '沒差', '', S('沒','méi','ㄇㄟˊ',T('ㄇ','m'),T('ㄟˊ','éi')), S('差','chā','ㄔㄚ',T('ㄔ','ch'),T('ㄚ','ā'))),
+  W('Silly / Clueless', 'TW Slang', '天兵', '', S('天','tiān','ㄊㄧㄢ',T('ㄊ','t'),T('ㄧㄢ','iān')), S('兵','bīng','ㄅㄧㄥ',T('ㄅ','b'),T('ㄧㄥ','īng')))
+]}
+];
+
+// ════════════════════════════════════════════════════════
+//  GAME ENGINE & LOGIC
+// ════════════════════════════════════════════════════════
+let cIdx = 0, wIdx = 0, currentQueue = [], slots = [], wordDone = false, flawlessWord = true;
+let masteredWords = new Set(); 
+
+function loadStorage() {
+  const saved = localStorage.getItem('bpmMastery');
+  if(saved) masteredWords = new Set(JSON.parse(saved));
+  updateStats();
+}
+
+function saveStorage() {
+  localStorage.setItem('bpmMastery', JSON.stringify([...masteredWords]));
+  updateStats();
+}
+
+function updateStats() {
+  const count = masteredWords.size;
+  document.getElementById('l-mastered').textContent = count;
+  document.getElementById('hud-mastered').textContent = count;
+  
+  const level = Math.floor(count / 15) + 1;
+  let title = "Novice";
+  if(level >= 3) title = "Explorer";
+  if(level >= 5) title = "Scholar";
+  if(level >= 8) title = "Expert";
+  if(level >= 10) title = "Master";
+  if(level >= 14) title = "Legend";
+  
+  const lbl = `Level ${level}: ${title}`;
+  document.getElementById('l-level').textContent = lbl;
+  document.getElementById('hud-level').textContent = lbl;
+}
+
+function startApp() {
+  AudioSys.playSFX('btn_click');
+  document.getElementById('landing-page').style.visibility = 'hidden';
+  document.getElementById('landing-page').style.opacity = '0';
+  document.getElementById('main-app').style.display = 'flex';
+  init();
+}
+
+function init() {
+  const gCat = document.getElementById('game-cats');
+  const rCat = document.getElementById('rev-cats');
+  gCat.innerHTML = ''; rCat.innerHTML = '';
+  
+  DB.forEach((cat, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill' + (i===0 ? ' active':''); btn.textContent = cat.label;
+    btn.onclick = (e) => {
+      AudioSys.playSFX('menu_tab');
+      document.querySelectorAll('#game-cats .cat-pill').forEach(b=>b.classList.remove('active'));
+      e.target.classList.add('active');
+      cIdx = i; startCategory();
+    };
+    gCat.appendChild(btn);
+
+    const rBtn = document.createElement('button');
+    rBtn.className = 'cat-pill' + (i===0 ? ' active':''); rBtn.textContent = cat.label;
+    rBtn.onclick = (e) => {
+      AudioSys.playSFX('menu_tab');
+      document.querySelectorAll('#rev-cats .cat-pill').forEach(b=>b.classList.remove('active'));
+      e.target.classList.add('active');
+      renderRev(i);
+    };
+    rCat.appendChild(rBtn);
+  });
+  
+  enableDragScroll(gCat);
+  enableDragScroll(rCat);
+  
+  renderRev(0);
+  startCategory();
+}
+
+function tab(t) {
+  AudioSys.playSFX('menu_tab');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(t)));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`${t}-panel`).classList.add('active');
+  if(t === 'review') renderRev(document.querySelector('#rev-cats .active') ? Array.from(document.getElementById('rev-cats').children).indexOf(document.querySelector('#rev-cats .active')) : 0);
+}
+
+function startCategory() {
+  currentQueue = shuffle([...DB[cIdx].words]);
+  wIdx = 0;
+  loadWord();
+}
+
+function loadWord() {
+  document.getElementById('prog-val').textContent = `${wIdx + 1} / ${currentQueue.length}`;
+  
+  if(wIdx >= currentQueue.length) {
+    document.getElementById('play-area').style.display = 'none';
+    document.getElementById('finish').style.display = 'block';
+    return;
+  }
+  
+  document.getElementById('play-area').style.display = 'block';
+  document.getElementById('finish').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  wordDone = false;
+  flawlessWord = true; 
+  
+  const w = currentQueue[wIdx];
+  document.getElementById('c-eng').textContent = w.eng;
+  document.getElementById('c-hint').textContent = w.hint;
+  const n = document.getElementById('c-note');
+  n.innerHTML = w.sandhi ? `<span class="sandhi-note">⚡ ${w.sandhi}</span>` : '';
+
+  slots = w.syllables.map(s => ({
+    hz: s.char, py: s.py, zhFull: s.zh, targets: s.tiles.map(t=>t.zh), filled: [], done: false
+  }));
+
+  renderSlots();
+  renderBank(w);
+  setSlot(0); 
+}
+
+function renderSlots() {
+  const box = document.getElementById('slots');
+  box.innerHTML = '';
+  slots.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'slot'; el.id = `s-${i}`;
+    
+    const fillTxt = s.filled.map(t=>t.zh).join('');
+    const emptyTxt = Array(s.targets.length - s.filled.length).fill('＿').join('');
+    
+    el.innerHTML = `
+      <div class="s-hz">${s.hz}</div>
+      <div class="s-py">${s.py}</div>
+      <div class="s-zh">${fillTxt}<span>${emptyTxt}</span></div>
+    `;
+    el.onclick = () => {
+        TTS.speak(s.hz);
+        clearSlot(i);
+    };
+    box.appendChild(el);
+  });
+}
+
+function setSlot(idx) {
+  document.querySelectorAll('.slot').forEach(e => { e.classList.remove('active'); e.style.opacity = '0.5'; });
+  const cur = document.getElementById(`s-${idx}`);
+  if(cur && !slots[idx].done) { cur.classList.add('active'); cur.style.opacity = '1'; }
+  else document.querySelectorAll('.slot').forEach(e => e.style.opacity = '1');
+}
+
+function clearSlot(idx) {
+  if(wordDone || slots[idx].filled.length === 0) return;
+  AudioSys.playSFX('btn_click');
+  slots[idx].filled.forEach(t => document.getElementById(`t-${t.id}`).classList.remove('used'));
+  slots[idx].filled = []; slots[idx].done = false;
+  document.getElementById(`s-${idx}`).classList.remove('done');
+  renderSlots(); setSlot(idx);
+}
+
+function renderBank(word) {
+  const bank = document.getElementById('bank');
+  bank.innerHTML = '';
+  
+  let req = [];
+  word.syllables.forEach(s => s.tiles.forEach(t => req.push({...t})));
+  
+  const pool = [
+    T('ㄅ','b'),T('ㄆ','p'),T('ㄇ','m'),T('ㄈ','f'),T('ㄉ','d'),T('ㄊ','t'),T('ㄓ','zh'),T('ㄔ','ch'),
+    T('ㄕ','sh'),T('ㄐ','j'),T('ㄑ','q'),T('ㄒ','x'),T('ㄚ','a'),T('ㄛ','o'),T('ㄜ','e'),T('ㄞ','ai'),
+    T('ㄠ','ao'),T('ㄡ','ou'),T('ㄧㄢ','ian'),T('ㄨㄤ','uang'),T('ㄩㄝ','yue'),T('ㄧㄥ','ing'),T('ㄨㄟ','uei')
+  ];
+  const reqSet = new Set(req.map(t=>t.zh));
+  const dist = shuffle(pool.filter(t=>!reqSet.has(t.zh))).slice(0, 4);
+  
+  shuffle([...req, ...dist]).forEach((t, i) => {
+    const el = document.createElement('div');
+    el.className = 'tile'; el.id = `t-${i}`;
+    el.innerHTML = `<div class="t-zh">${t.zh}</div><div class="t-py">${t.py}</div>`;
+    el.onclick = () => tapTile(t, i, el);
+    bank.appendChild(el);
+  });
+}
+
+function tapTile(tile, id, el) {
+  if(wordDone || el.classList.contains('used')) return;
+  let sIdx = slots.findIndex(s => !s.done);
+  if(sIdx === -1) return;
+  setSlot(sIdx);
+  
+  const s = slots[sIdx];
+  const nextRequired = s.targets[s.filled.length];
+  
+  if(tile.zh === nextRequired) {
+    AudioSys.playSFX('pop');
+    s.filled.push({zh: tile.zh, id: id});
+    el.classList.add('used');
+    
+    if(s.filled.length === s.targets.length) s.done = true;
+    renderSlots();
+    
+    if(s.done) {
+      document.getElementById(`s-${sIdx}`).classList.add('done');
+      document.getElementById(`s-${sIdx}`).classList.remove('active');
+      let nIdx = slots.findIndex(x => !x.done);
+      if(nIdx !== -1) setSlot(nIdx); else finishWord();
+    }
+  } else {
+    AudioSys.playSFX('error');
+    flawlessWord = false; 
+    const sEl = document.getElementById(`s-${sIdx}`);
+    sEl.classList.remove('error'); void sEl.offsetWidth; sEl.classList.add('error');
+  }
+}
+
+function finishWord() {
+  wordDone = true; 
+  
+  const hanzi = currentQueue[wIdx].hanzi;
+  if(flawlessWord) { masteredWords.add(hanzi); } 
+  else { masteredWords.delete(hanzi); }
+  
+  saveStorage(); 
+
+  document.querySelectorAll('.slot').forEach(e => e.style.opacity = '1');
+  document.getElementById('btn-next').style.display = 'block';
+
+  setTimeout(() => TTS.speak(hanzi), 300);
+}
+
+function hint() {
+  if(wordDone) return;
+  AudioSys.playSFX('reminder');
+  flawlessWord = false; 
+  const sIdx = slots.findIndex(s => !s.done);
+  if(sIdx === -1) return;
+  const next = slots[sIdx].targets[slots[sIdx].filled.length];
+  for(let el of document.querySelectorAll('.tile:not(.used)')) {
+    if(el.querySelector('.t-zh').textContent === next) {
+      el.style.backgroundColor = '#FEF3C7'; el.style.borderColor = '#F6AD55';
+      setTimeout(() => { el.style.backgroundColor=''; el.style.borderColor=''; }, 1500);
+      break;
+    }
+  }
+}
+
+function nextWord() { AudioSys.playSFX('btn_click'); wIdx++; loadWord(); }
+function replay() { AudioSys.playSFX('btn_click'); startCategory(); }
+function nextCat() { AudioSys.playSFX('btn_click'); document.querySelectorAll('#game-cats .cat-pill')[(cIdx+1)%DB.length]?.click(); }
+
+function renderRev(catIndex) {
+  const box = document.getElementById('rev-list');
+  box.innerHTML = '';
+  DB[catIndex].words.forEach(w => {
+    const isMastered = masteredWords.has(w.hanzi);
+    
+    let badgeHtml = isMastered 
+      ? `<span class="r-badge b-master">✓ Flawless</span>` 
+      : `<span class="r-badge b-prac">Needs Practice</span>`;
+      
+    const sHtml = w.syllables.map(s => `
+      <div class="r-syl">
+        <span class="r-s-hz">${s.char}</span>
+        <span class="r-s-py">${s.py}</span>
+        <span class="r-s-zh">${s.zh}</span>
+      </div>`).join('');
+    
+    const nHtml = w.sandhi ? `<div class="r-note">⚡ ${w.sandhi}</div>` : '';
+    box.innerHTML += `
+      <div class="r-card ${isMastered ? 'mastered' : 'struggled'}">
+        <div class="r-top">
+          <div class="r-hz">${w.hanzi} <button class="r-listen" onclick="TTS.speak('${w.hanzi}')">🔊</button></div>
+          <div style="text-align:right;">
+             <div class="r-en" style="margin-bottom:4px;">${w.eng}</div>
+             ${badgeHtml}
+          </div>
+        </div>
+        ${nHtml}
+        <div class="r-syls">${sHtml}</div>
+      </div>`;
+  });
+}
+
+function shuffle(a){ for(let i=a.length-1; i>0; i--){ const j=~~(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+loadStorage();
+</script>
+</body>
+</html>
