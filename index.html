@@ -367,7 +367,6 @@ const TTS = {
         t = t.replace(/記得/g, '記德'); // jì dé (TW) vs jì de (Mainland neutral)
         t = t.replace(/蒼蠅/g, '蒼螢'); // cāng yíng (TW) vs cāng ying (Mainland neutral)
         t = t.replace(/星星/g, '星腥'); // xīng xīng (Prevents Mainland from dropping 2nd tone)
-        // 👆 ══════════════════════════════════════ 👆
 
         // ⚡ Tone Sandhi Fixes for "一" (yī) changing to 2nd (yí) or 4th (yì) tone
         t = t.replace(/一個/g, '移個'); // yí ge
@@ -384,6 +383,12 @@ const TTS = {
         t = t.replace(/一定/g, '移定'); // yí dìng (For 不一定)
         t = t.replace(/一名/g, '意名'); // yì míng (For 最後一名)
         
+// 👇 NEW OVERRIDES FOR MODERN TW SLANG & TRAFFIC 👇
+t = t.replace(/打卡/g, '達卡'); // 3rd+3rd → dá kǎ (Forces smooth slang pronunciation)
+t = t.replace(/網美/g, '王美'); // 3rd+3rd → wáng měi (Forces smooth slang pronunciation)
+t = t.replace(/待轉/g, '代轉'); // Prevents TTS from accidentally saying "dāi" instead of "dài"
+
+
         return t;
     },
     speak: function(text, rate = 0.85) {
@@ -1267,7 +1272,51 @@ const DB = [
     W('Eco-friendly', 'Bring your own bag/cup', '環保', '', S('環','huán','ㄏㄨㄢˊ',T('ㄏ','h'),T('ㄨㄢˊ','uán')), S('保','bǎo','ㄅㄠˇ',T('ㄅ','b'),T('ㄠˇ','ǎo'))),
     W('Thermos / Cup', 'Reusable cup for Boba', '環保杯', '', S('環','huán','ㄏㄨㄢˊ',T('ㄏ','h'),T('ㄨㄢˊ','uán')), S('保','bǎo','ㄅㄠˇ',T('ㄅ','b'),T('ㄠˇ','ǎo')), S('杯','bēi','ㄅㄟ',T('ㄅ','b'),T('ㄟ','ēi'))),
     W('Stay up late', 'Pulling an all-nighter', '熬夜', '', S('熬','áo','ㄠˊ',T('ㄠˊ','áo')), S('夜','yè','ㄧㄝˋ',T('ㄧㄝˋ','yè')))
+  ]},
+
+
+
+{label: '7-11 & Checkout 🏪', words: [
+    W('Microwave', 'TW pronounces it wéi', '微波', '微 = 2nd tone in TW', S('微','wéi','ㄨㄟˊ',T('ㄨ','w'),T('ㄟˊ','éi')), S('波','bō','ㄅㄛ',T('ㄅ','b'),T('ㄛ','ō'))),
+    W('Tax ID Number', 'Asked at every checkout', '統編', '', S('統','tǒng','ㄊㄨㄥˇ',T('ㄊ','t'),T('ㄨㄥˇ','ǒng')), S('編','biān','ㄅㄧㄢ',T('ㄅ','b'),T('ㄧㄢ','iān'))),
+    W('Pick up package', 'EC delivery to store', '取貨', '', S('取','qǔ','ㄑㄩˇ',T('ㄑ','q'),T('ㄩˇ','ǚ')), S('貨','huò','ㄏㄨㄛˋ',T('ㄏ','h'),T('ㄨㄛˋ','uò'))),
+    W('Member Points', 'Do you have membership?', '點數', '', S('點','diǎn','ㄉㄧㄢˇ',T('ㄉ','d'),T('ㄧㄢˇ','iǎn')), S('數','shù','ㄕㄨˋ',T('ㄕ','sh'),T('ㄨˋ','ù'))),
+    W('Straw', 'For your drinks', '吸管', '', S('吸','xī','ㄒㄧ',T('ㄒ','x'),T('ㄧ','ī')), S('管','guǎn','ㄍㄨㄢˇ',T('ㄍ','g'),T('ㄨㄢˇ','uǎn')))
+  ]},
+
+
+{label: 'TW Survival Life 🛵', words: [
+    W('Two-Stage Turn', 'Scooter turn box', '待轉區', '', S('待','dài','ㄉㄞˋ',T('ㄉ','d'),T('ㄞˋ','ài')), S('轉','zhuǎn','ㄓㄨㄢˇ',T('ㄓ','zh'),T('ㄨㄢˇ','uǎn')), S('區','qū','ㄑㄩ',T('ㄑ','q'),T('ㄩ','ū'))),
+    W('Fill it up', 'At the gas station', '加滿', '', S('加','jiā','ㄐㄧㄚ',T('ㄐ','j'),T('ㄧㄚ','iā')), S('滿','mǎn','ㄇㄢˇ',T('ㄇ','m'),T('ㄢˇ','ǎn'))),
+    W('Cram School', 'Huge part of TW culture', '補習班', '', S('補','bǔ','ㄅㄨˇ',T('ㄅ','b'),T('ㄨˇ','ǔ')), S('習','xí','ㄒㄧˊ',T('ㄒ','x'),T('ㄧˊ','í')), S('班','bān','ㄅㄢ',T('ㄅ','b'),T('ㄢ','ān'))),
+    W('Part-time Job', 'For students', '打工', '', S('打','dǎ','ㄉㄚˇ',T('ㄉ','d'),T('ㄚˇ','ǎ')), S('工','gōng','ㄍㄨㄥ',T('ㄍ','g'),T('ㄨㄥ','ōng'))),
+    W('Studio Apartment', 'Common for renting', '套房', '', S('套','tào','ㄊㄠˋ',T('ㄊ','t'),T('ㄠˋ','ào')), S('房','fáng','ㄈㄤˊ',T('ㄈ','f'),T('ㄤˊ','áng'))),
+    W('Landlord', '', '房東', '', S('房','fáng','ㄈㄤˊ',T('ㄈ','f'),T('ㄤˊ','áng')), S('東','dōng','ㄉㄨㄥ',T('ㄉ','d'),T('ㄨㄥ','ōng')))
+  ]},
+
+
+{label: 'Local Dining 🥢', words: [
+    W('Blanched Veggies', 'Classic side dish', '燙青菜', '', S('燙','tàng','ㄊㄤˋ',T('ㄊ','t'),T('ㄤˋ','àng')), S('青','qīng','ㄑㄧㄥ',T('ㄑ','q'),T('ㄧㄥ','īng')), S('菜','cài','ㄘㄞˋ',T('ㄘ','c'),T('ㄞˋ','ài'))),
+    W('All-you-can-eat', 'TW Buffet Culture', '吃到飽', '', S('吃','chī','ㄔ',T('ㄔ','ch')), S('到','dào','ㄉㄠˋ',T('ㄉ','d'),T('ㄠˋ','ào')), S('飽','bǎo','ㄅㄠˇ',T('ㄅ','b'),T('ㄠˇ','ǎo'))),
+    W('Pack to go', 'Taking leftovers', '打包', '', S('打','dǎ','ㄉㄚˇ',T('ㄉ','d'),T('ㄚˇ','ǎ')), S('包','bāo','ㄅㄠ',T('ㄅ','b'),T('ㄠ','āo'))),
+    W('Hand-shaken drink', 'Boba shop term', '手搖飲', '', S('手','shǒu','ㄕㄡˇ',T('ㄕ','sh'),T('ㄡˇ','ǒu')), S('搖','yáo','ㄧㄠˊ',T('ㄧ','y'),T('ㄠˊ','áo')), S('飲','yǐn','ㄧㄣˇ',T('ㄧㄣˇ','yǐn')))
+  ]},
+
+
+
+
+{label: 'Modern TW Culture 📱', words: [
+    W('Bad Customer', 'TW slang (Karen)', '奧客', '', S('奧','ào','ㄠˋ',T('ㄠˋ','ào')), S('客','kè','ㄎㄜˋ',T('ㄎ','k'),T('ㄜˋ','è'))),
+    W('Check in', 'On FB / IG', '打卡', '', S('打','dǎ','ㄉㄚˇ',T('ㄉ','d'),T('ㄚˇ','ǎ')), S('卡','kǎ','ㄎㄚˇ',T('ㄎ','k'),T('ㄚˇ','ǎ'))),
+    W('Internet Beauty', 'IG Influencer', '網美', '', S('網','wǎng','ㄨㄤˇ',T('ㄨㄤˇ','wǎng')), S('美','měi','ㄇㄟˇ',T('ㄇ','m'),T('ㄟˇ','ěi'))),
+    W('Clueless / Blind', 'TW insult slang', '白目', '', S('白','bái','ㄅㄞˊ',T('ㄅ','b'),T('ㄞˊ','ái')), S('目','mù','ㄇㄨˋ',T('ㄇ','m'),T('ㄨˋ','ù'))),
+    W('Sponsored Post', 'Ad on social media', '業配', '', S('業','yè','ㄧㄝˋ',T('ㄧㄝˋ','yè')), S('配','pèi','ㄆㄟˋ',T('ㄆ','p'),T('ㄟˋ','èi'))),
+    W('Haters / Trolls', 'Internet slang', '酸民', '', S('酸','suān','ㄙㄨㄢ',T('ㄙ','s'),T('ㄨㄢ','uān')), S('民','mín','ㄇㄧㄣˊ',T('ㄇ','m'),T('ㄧㄣˊ','ín')))
   ]}
+
+
+
+
 
 ];
 
@@ -1291,8 +1340,19 @@ function saveStorage() {
 function updateStats() {
   const count = userData.mastered.length;
   document.getElementById('l-mastered').textContent = count;
-  const level = Math.floor(count / 15) + 1;
-  let title = "Novice"; if(level >= 3) title = "Explorer"; if(level >= 5) title = "Scholar"; if(level >= 8) title = "Expert"; if(level >= 10) title = "Master";
+  
+  // Changed from 15 to 25 words per level. 
+  // With ~600 words, the max level will be around Level 25.
+  const level = Math.floor(count / 25) + 1;
+  
+  // New stretched thresholds with fun emojis
+  let title = "Novice 🐣"; 
+  if(count >= 50)  title = "Explorer 🚶";    // 50 words
+  if(count >= 150) title = "Scholar 📚";     // 150 words
+  if(count >= 300) title = "Expert 🥋";      // 300 words (Halfway!)
+  if(count >= 450) title = "Master 🐉";      // 450 words
+  if(count >= 580) title = "TW Legend 👑";   // Nearly all words complete
+  
   document.getElementById('l-level').textContent = `Level ${level}: ${title}`;
 }
 
