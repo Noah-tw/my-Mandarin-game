@@ -324,19 +324,13 @@ function enableDragScroll(slider) {
 // ════════════════════════════════════════════════════════
 //  TEXT-TO-SPEECH (IMPROVED TAIWANESE PATCHES)
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  TEXT-TO-SPEECH (CLOUD TAIWANESE - 100% FREE & ZERO API)
+// ════════════════════════════════════════════════════════
 const TTS = {
-    voice: null,
-    init: function() {
-        const setVoice = () => {
-            let voices = window.speechSynthesis.getVoices();
-            this.voice = voices.find(v => v.lang === 'zh-TW' && (v.name.includes('Yating') || v.name.includes('Hanlin') || v.name.includes('Mei-Jia'))) 
-                      || voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh'));
-        };
-        window.speechSynthesis.onvoiceschanged = setVoice; setVoice();
-    },
-   fixTaiwanTones: function(text) {
+    fixTaiwanTones: function(text) {
         let t = text;
-        // 🚨 Advanced Taiwan Pronunciation Overrides
+        // 🚨 Your Advanced Taiwan Pronunciation Overrides!
         t = t.replace(/法國/g, '琺國'); // fà guó
         t = t.replace(/和/g, '汗');    // hàn
         t = t.replace(/星期/g, '星其'); // xīng qí
@@ -355,56 +349,66 @@ const TTS = {
         t = t.replace(/蝸牛/g, '瓜牛'); // guā niú
         t = t.replace(/研究/g, '嚴究'); // yán jiù
         t = t.replace(/什麼/g, '甚麼'); // shén me
-        t = t.replace(/塑膠/g, '訴交'); // sù jiāo (Prevents mainland 'suò')
+        t = t.replace(/塑膠/g, '訴交'); // sù jiāo 
         t = t.replace(/期中考/g, '齊中考'); // qí zhōng kǎo
+        t = t.replace(/期末/g, '齊末'); // qí mò
+        t = t.replace(/突然/g, '圖然'); // tú rán 
+        t = t.replace(/夕陽/g, '細陽'); // xì yáng 
+        t = t.replace(/載具/g, '宰具'); // zǎi jù 
+        t = t.replace(/休息/g, '休席'); // xiū xí 
+        t = t.replace(/記得/g, '記德'); // jì dé 
+        t = t.replace(/蒼蠅/g, '蒼螢'); // cāng yíng 
+        t = t.replace(/星星/g, '星腥'); 
 
-        // 👇 NEW OVERRIDES FOR YOUR MASSIVE WORD LIST 👇
-        t = t.replace(/期末/g, '齊末'); // qí mò (TW) vs qī mò (Mainland)
-        t = t.replace(/突然/g, '圖然'); // tú rán (TW) vs tū rán (Mainland)
-        t = t.replace(/夕陽/g, '細陽'); // xì yáng (TW) vs xī yáng (Mainland)
-        t = t.replace(/載具/g, '宰具'); // zǎi jù (TW) vs zài jù (Mainland)
-        t = t.replace(/休息/g, '休席'); // xiū xí (TW) vs xiū xi (Mainland neutral)
-        t = t.replace(/記得/g, '記德'); // jì dé (TW) vs jì de (Mainland neutral)
-        t = t.replace(/蒼蠅/g, '蒼螢'); // cāng yíng (TW) vs cāng ying (Mainland neutral)
-        t = t.replace(/星星/g, '星腥'); // xīng xīng (Prevents Mainland from dropping 2nd tone)
-
-        // ⚡ Tone Sandhi Fixes for "一" (yī) changing to 2nd (yí) or 4th (yì) tone
-        t = t.replace(/一個/g, '移個'); // yí ge
-        t = t.replace(/一塊/g, '移塊'); // yí kuài
-        t = t.replace(/一輛/g, '移輛'); // yí liàng
-        t = t.replace(/一杯/g, '意杯'); // yì bēi
-        t = t.replace(/一張/g, '意張'); // yì zhāng
-        t = t.replace(/一隻/g, '意隻'); // yì zhī
-        t = t.replace(/一本/g, '意本'); // yì běn
-        t = t.replace(/一雙/g, '意雙'); // yì shuāng
+        // ⚡ Tone Sandhi Fixes for "一"
+        t = t.replace(/一個/g, '移個');
+        t = t.replace(/一塊/g, '移塊');
+        t = t.replace(/一輛/g, '移輛');
+        t = t.replace(/一杯/g, '意杯');
+        t = t.replace(/一張/g, '意張');
+        t = t.replace(/一隻/g, '意隻');
+        t = t.replace(/一本/g, '意本');
+        t = t.replace(/一雙/g, '意雙');
+        t = t.replace(/一下/g, '移下');
+        t = t.replace(/一定/g, '移定');
+        t = t.replace(/一名/g, '意名');
         
-        // 👇 NEW TONE SANDHI FOR YOUR MASSIVE WORD LIST 👇
-        t = t.replace(/一下/g, '移下'); // yí xià (For 等一下)
-        t = t.replace(/一定/g, '移定'); // yí dìng (For 不一定)
-        t = t.replace(/一名/g, '意名'); // yì míng (For 最後一名)
-        
-// 👇 NEW OVERRIDES FOR MODERN TW SLANG & TRAFFIC 👇
-t = t.replace(/打卡/g, '達卡'); // 3rd+3rd → dá kǎ (Forces smooth slang pronunciation)
-t = t.replace(/網美/g, '王美'); // 3rd+3rd → wáng měi (Forces smooth slang pronunciation)
-t = t.replace(/待轉/g, '代轉'); // Prevents TTS from accidentally saying "dāi" instead of "dài"
-
-
+        // Slang & Traffic fixes
+        t = t.replace(/打卡/g, '達卡'); 
+        t = t.replace(/網美/g, '王美'); 
+        t = t.replace(/待轉/g, '代轉'); 
         return t;
     },
     speak: function(text, rate = 0.85) {
-        if (!window.speechSynthesis) return showToast("Speech not supported.");
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(this.fixTaiwanTones(text));
-        u.lang = 'zh-TW'; u.rate = rate; 
-        if (this.voice) u.voice = this.voice;
-        window.speechSynthesis.speak(u);
+        if (!text) return;
+        try {
+            // 1. Apply your custom Taiwan pronunciation fixes
+            const fixedText = this.fixTaiwanTones(text);
+            
+            // 2. Encode for URL
+            const encodedText = encodeURIComponent(fixedText);
+            
+            // 3. Send to Google's FREE public dictionary voice (tl=zh-TW ensures Taiwanese accent)
+            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-TW&q=${encodedText}`;
+            
+            // 4. Play the audio
+            const audio = new Audio(audioUrl);
+            audio.playbackRate = rate; 
+            audio.play().catch(e => {
+                console.error("Audio block:", e);
+                showToast("Check internet connection for audio.");
+            });
+        } catch (error) {
+            console.error("TTS Error:", error);
+            showToast("Speech generation failed.");
+        }
     }
 };
-TTS.init();
 
-
-function playCurrentWordTTS() { AudioSys.playSFX('btn_click'); TTS.speak(currentQueue[wIdx].hanzi); }
-
+function playCurrentWordTTS() { 
+    AudioSys.playSFX('btn_click'); 
+    TTS.speak(currentQueue[wIdx].hanzi); 
+}
 // ════════════════════════════════════════════════════════
 //  AUDIO ENGINE
 // ════════════════════════════════════════════════════════
