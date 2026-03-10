@@ -193,7 +193,7 @@ header { width: 100%; padding: 10px 16px 6px; background: var(--surface); z-inde
     
    <div class="dev-note">
       <span>👨‍💻 Note for Students:</span>
-      Because this app runs completely offline, it relies on your phone's built-in system voice. Due to technical limits, the auto-voice might occasionally sound different from how Taiwanese people naturally pronounce certain words. <b>Always trust the Bopomofo symbols on the screen!</b>
+      Online audio and Bopomofo are NOT always 100% perfect. If something sounds or looks off,  <b>please check with a native speaker!</b>
     </div>
 
     <div class="l-stats">
@@ -265,7 +265,7 @@ header { width: 100%; padding: 10px 16px 6px; background: var(--surface); z-inde
     <div id="rev-list-container">
       <div class="r-list" id="rev-list"></div>
      <div style="font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 30px; font-weight: 700;">
-        ⚠️ Reminder: Due to system voice limits, the audio might occasionally differ from natural Taiwanese pronunciation. Use the Bopomofo as your true guide!<br><br>
+        ⚠️ Reminder: Due to system voice limits, the audio might occasionally differ from natural Taiwanese pronunciation. <br><br>
         App crafted with ❤️ by Noah
       </div>
     </div>
@@ -333,6 +333,8 @@ const TTS = {
     fixTaiwanTones: function(text) {
         let t = text;
         // 🚨 Your Advanced Taiwan Pronunciation Overrides!
+	// 👇 ADD THIS LINE TO FIX "BYE BYE" (Forces 1st tone bāi bāi)
+        		t = t.replace(/拜拜/g, '掰掰');
         t = t.replace(/法國/g, '琺國'); // fà guó
         t = t.replace(/和/g, '汗');    // hàn
         t = t.replace(/星期/g, '星其'); // xīng qí
@@ -1475,11 +1477,16 @@ function renderBank(word) {
 
 function tapTile(tile, id, el) {
   if(wordDone || el.classList.contains('used')) return;
+  
+  // 👇 NEW: Play the sound of the specific Bopomofo symbol!
+  TTS.speak(tile.zh, 1.0); 
+  
   let sIdx = slots.findIndex(s => !s.done); if(sIdx === -1) return;
   setSlot(sIdx); const s = slots[sIdx]; const nextRequired = s.targets[s.filled.length];
   
   if(tile.zh === nextRequired) {
-    AudioSys.playSFX('pop'); s.filled.push({zh: tile.zh, id: id}); el.classList.add('used');
+    // We removed the 'pop' sound here so it doesn't overlap with the voice
+    s.filled.push({zh: tile.zh, id: id}); el.classList.add('used');
     if(s.filled.length === s.targets.length) s.done = true;
     renderSlots();
     if(s.done) {
