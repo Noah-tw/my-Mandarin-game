@@ -1512,7 +1512,7 @@ function finishWord() {
   document.querySelectorAll('.slot').forEach(e => e.style.opacity = '1');
   document.getElementById('bank-container').style.display = 'none';
   document.getElementById('btn-next').style.display = 'block';
-  setTimeout(() => TTS.speak(hanzi), 300);
+  setTimeout(() => TTS.speak(hanzi), 1000);
 }
 
 function hint() {
